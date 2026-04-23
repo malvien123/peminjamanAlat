@@ -26,6 +26,7 @@
                     <th>Nama Peminjam</th>
                     <th>Nama Alat</th>
                     <th>Tgl Pinjam</th>
+                    <th>Tgl Kembali</th>
                     <th>Status</th>
                     <th class="no-print">Konfirmasi</th>
                 </tr>
@@ -41,6 +42,8 @@
                     <td><?= htmlspecialchars($row->nama_peminjam); ?></td>
                     <td><?= htmlspecialchars($row->nama_alat); ?></td>
                     <td class="text-center"><?= date('d-m-Y', strtotime($row->tgl_pinjam)); ?></td>
+                    <td>
+                     <?= ($row->status == 'kembali') ? $row->tgl_kembali_asli : '-'; ?></td>
                     <td class="text-center">
                         <?php 
                             $badge = 'secondary';

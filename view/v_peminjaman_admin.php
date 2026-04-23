@@ -23,10 +23,10 @@ $tipe_halaman = $_GET['tipe'] ?? 'pinjam'; // Default ke pinjam jika kosong
 
         <div class="mb-3 d-flex justify-content-between align-items-center">
             <div>
+                <a href="v_tampilan_user.php" class="btn btn-primary">kembali</a>
                 <a href="v_peminjaman_admin.php?tipe=pinjam" class="btn btn-<?= ($tipe_halaman != 'kembali') ? 'primary' : 'outline-primary'; ?>">Daftar Peminjaman</a>
                 <a href="v_peminjaman_admin.php?tipe=kembali" class="btn btn-<?= ($tipe_halaman == 'kembali') ? 'primary' : 'outline-primary'; ?>">Daftar Pengembalian</a>
             </div>
-            <span class="text-muted small">Role: Admin</span>
         </div>
 
         <table class="table table-bordered table-striped align-middle text-center">

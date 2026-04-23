@@ -147,12 +147,25 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
         $result = $user_model->tambah_data($username, $pass_hash, $role);
-        $status = $result ? 'ditambahkan' : 'gagal';
+        
+        if ($result) {
+            // CEK: Jika yang daftar adalah 'peminjam', arahkan ke LOGIN
+            // Jika bukan (misal admin tambah petugas), tetap di halaman admin
+            if ($role === 'peminjam') {
+                echo "<script>alert('Registrasi Berhasil! Silakan Login.'); window.location='../view/v_login.php';</script>";
+            } else {
+                echo "<script>alert('Data Berhasil Ditambahkan'); window.location='c_user.php';</script>";
+            }
+        } else {
+            echo "<script>alert('Gagal menambahkan data'); window.history.back();</script>";
+        }
+        exit();
+
     } elseif ($aksi === 'update') {
         $result = $user_model->ubah_data($id_user, $username, $pass_hash);
         $status = $result ? 'diperbarui' : 'gagal';
+        echo "<script>alert('Data $status'); window.location='c_user.php';</script>";
+        exit();
     }
-
-    echo "<script>alert('Data $status'); window.location='c_user.php';</script>";
-    exit();
 }
+

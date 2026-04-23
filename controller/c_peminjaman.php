@@ -23,6 +23,7 @@ if ($aksi == 'proses_pinjam') {
     $simpan = $pinjam_model->tambah_pinjam($id_user, $id_alat, $jumlah, $kondisi);
 
     if ($simpan) {
+        $pinjam_model->log_aktivitas($_SESSION['id_user'], "User melakukan request pinjam alat baru");
         // Jika berhasil, lempar ke riwayat user
         header("location:../view/v_peminjaman_user.php");
         exit();
@@ -35,12 +36,14 @@ if ($aksi == 'proses_pinjam') {
 // --- AKSI PETUGAS (Tetap Sama) ---
 if ($aksi == 'setuju') {
     $pinjam_model->verifikasi_pinjam($id);
+    $pinjam_model->log_aktivitas($_SESSION['id_user'], "Petugas menyetujui peminjaman ID: $id");
     header("location:../view/v_peminjaman_petugas.php");
     exit();
 }
 
 if ($aksi == 'konfirmasi_kembali') {
     $pinjam_model->konfirmasi_kembali($id);
+    $pinjam_model->log_aktivitas($_SESSION['id_user'], "Petugas mengonfirmasi pengembalian alat ID: $id");
     header("location:../view/v_peminjaman_petugas.php");
     exit();
 }
@@ -64,6 +67,7 @@ if ($aksi == 'update_pinjam') {
     $status = $_POST['status'];
 
     $simpan = $pinjam_model->update_pinjam($id_peminjaman, $jumlah, $status);
+    $pinjam_model->log_aktivitas($_SESSION['id_user'], "Admin mengubah data peminjaman ID: " . $_POST['id_peminjaman']);
     if ($simpan) {
         echo "<script>alert('Data Berhasil Diupdate!'); window.location='../view/v_peminjaman_admin.php?tipe=pinjam';</script>";
         exit();

@@ -7,6 +7,29 @@ class m_peminjaman {
     }
 
     // Tampil SEMUA data untuk Petugas (untuk riwayat & print)
+   
+   // Fungsi untuk mencatat aktivitas
+    public function log_aktivitas($id_user, $aksi) {
+        $waktu = date('Y-m-d H:i:s');
+        // Pastikan nama kolom (id_user, aksi, waktu) sesuai dengan yang ada di phpMyAdmin
+        $sql = "INSERT INTO log_aktivitas (id_user, aksi, waktu) VALUES ('$id_user', '$aksi', '$waktu')";
+        
+        $query = mysqli_query($this->db, $sql);
+        
+        // Tambahkan ini untuk cek jika ada error database
+        if (!$query) {
+            die("Gagal simpan log: " . mysqli_error($this->db));
+        }
+        return $query;
+    }
+
+    // Fungsi untuk menampilkan log
+    public function tampil_log_aktivitas() {
+        $sql = "SELECT l.*, u.username FROM log_aktivitas l 
+                JOIN user u ON l.id_user = u.id_user 
+                ORDER BY l.id_log DESC";
+        return mysqli_query($this->db, $sql);
+    }
     public function tampil_data() {
         $sql = "SELECT p.*, u.username AS nama_peminjam, a.nama_alat
                 FROM peminjaman p
@@ -33,7 +56,8 @@ public function verifikasi_pinjam($id) {
 
 // Aksi Petugas: Kembali (dipinjam -> kembali) + TAMBAH STOK
 public function konfirmasi_kembali($id) {
-    $tgl_skrg = date('Y-m-d');
+    // Ganti bagian tgl_skrg menjadi seperti ini:
+$tgl_skrg = date('Y-m-d H:i:s'); // H:i:s akan mengambil Jam:Menit:Detik
     
     // 1. Ambil data peminjaman untuk tahu id_alat dan jumlahnya
     $data = mysqli_fetch_array(mysqli_query($this->db, "SELECT id_alat, jumlah_pinjam FROM peminjaman WHERE id_peminjaman = '$id'"));
@@ -77,4 +101,6 @@ public function konfirmasi_kembali($id) {
         return mysqli_query($this->db, $sql);
     }
 }
+// Fungsi untuk mencatat setiap pergerakan user
+
 ?>
