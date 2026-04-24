@@ -11,7 +11,7 @@
     <h2>Edit Data Alat</h2>
     <hr>
     
-    <from action="../controller/c_alat.php?aksi=update" method="post">
+    <form action="../controller/c_alat.php?aksi=update" method="post">
         
         <input type="hidden" name="id_alat" value="<?= $data_alat->id_alat; ?>">
 

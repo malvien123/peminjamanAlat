@@ -80,8 +80,33 @@ class m_peminjaman {
     }
 
     // Fungsi update untuk Admin jika ada kesalahan data jumlah atau status
-    public function update_pinjam($id, $jumlah, $status) {
-        return mysqli_query($this->db, "UPDATE peminjaman SET jumlah_pinjam = '$jumlah', status = '$status' WHERE id_peminjaman = '$id'");
+    // Fungsi update untuk Admin jika ada kesalahan data jumlah atau status
+    public function update_pinjam($id, $jumlah_baru, $status) {
+        // 1. Ambil data lama sebelum diupdate untuk tahu selisihnya
+        $query_lama = mysqli_query($this->db, "SELECT id_alat, jumlah_pinjam, status FROM peminjaman WHERE id_peminjaman = '$id'");
+        $data_lama  = mysqli_fetch_array($query_lama);
+        
+        $id_alat     = $data_lama['id_alat'];
+        $jumlah_lama = $data_lama['jumlah_pinjam'];
+        $status_lama = $data_lama['status'];
+
+        // 2. Update data peminjaman terlebih dahulu
+        $update_peminjaman = mysqli_query($this->db, "UPDATE peminjaman SET jumlah_pinjam = '$jumlah_baru', status = '$status' WHERE id_peminjaman = '$id'");
+
+        // 3. LOGIKA UPDATE STOK (Hanya jika statusnya 'dipinjam')
+        // Jika statusnya 'pending', stok biasanya belum berkurang, jadi tidak perlu dihitung selisihnya.
+        if ($status === 'dipinjam' || $status_lama === 'dipinjam') {
+            
+            // Hitung selisih: Baru - Lama
+            // Contoh: Pinjam 2 (baru) - Pinjam 1 (lama) = 1 (berarti stok harus berkurang 1 lagi)
+            // Contoh: Pinjam 1 (baru) - Pinjam 2 (lama) = -1 (berarti stok harus ditambah 1)
+            $selisih = $jumlah_baru - $jumlah_lama;
+
+            // Update stok di tabel alat
+            mysqli_query($this->db, "UPDATE alat SET stok = stok - $selisih WHERE id_alat = '$id_alat'");
+        }
+
+        return $update_peminjaman;
     }
 
     // Fungsi update untuk Admin saat mengelola data pengembalian
