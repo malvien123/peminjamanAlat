@@ -1,6 +1,8 @@
 <?php
 // Memulai session untuk mengecek hak akses (login)
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Memanggil file koneksi dan semua model yang dibutuhkan
 require_once '../model/m_koneksi.php';

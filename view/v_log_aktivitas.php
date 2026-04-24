@@ -1,5 +1,27 @@
 <?php 
-session_start();
+
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+// 1. Cek apakah sudah login? Jika belum, balik ke login.php
+if (!isset($_SESSION['role'])) {
+    header("Location: v_login.php");
+    exit();
+}
+
+// 2. Jika yang masuk BUKAN admin, maka dialihkan/ditendang balik
+if ($_SESSION['role'] !== 'admin') {
+    if ($_SESSION['role'] === 'petugas') {
+        header("Location: v_peminjaman_petugas.php");
+    } else {
+        header("Location: v_daftar_alat.php");
+    }
+    exit();
+}
+
+
+
+
+
 include '../controller/c_peminjaman.php'; // Ini otomatis memanggil m_peminjaman dan koneksi
 
 // Ambil data log dari model menggunakan fungsi yang tadi kita buat

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 23, 2026 at 01:27 PM
+-- Generation Time: Apr 24, 2026 at 11:12 AM
 -- Server version: 8.4.3
 -- PHP Version: 8.4.17
 
@@ -42,7 +42,14 @@ CREATE TABLE `alat` (
 INSERT INTO `alat` (`id_alat`, `id_kategori`, `nama_alat`, `stok`, `foto`) VALUES
 (1, 2, 'tenda', 77, 'https://omeuj.b-cdn.net/wp-content/uploads/Tenda-de-Acampamento-Familiar-8-10-Pessoas-Port%C3%A1til-e-Imperme%C3%A1vel-com-Saco-de-Transporte-4.3x3x2m.jpg'),
 (2, 2, 'tas', 5, 'https://png.pngtree.com/png-clipart/20230103/original/pngtree-blue-school-bag-cartoon-illustration-png-image_8864296.png'),
-(4, 7, 'pensil', 96, 'https://down-id.img.susercontent.com/file/id-11134207-7r98r-lxfhf70k4jsa4e');
+(4, 7, 'pensil', 96, 'https://down-id.img.susercontent.com/file/id-11134207-7r98r-lxfhf70k4jsa4e'),
+(5, 15, 'mic', 15, 'https://images.pexels.com/photos/207474/pexels-photo-207474.jpeg?cs=srgb&dl=audio-black-classic-207474.jpg&fm=jpg'),
+(6, 11, 'laptop', 12, 'https://wallpapers.com/images/featured/laptop-pictures-2l1fs0hwq4c9obgx.jpg'),
+(7, 7, 'pulpen', 60, 'https://tse2.mm.bing.net/th/id/OIP.qlc31OpAf0y3h1UNQvci-QHaEd?pid=Api&P=0&h=180'),
+(8, 15, 'speaker', 5, 'https://m.media-amazon.com/images/I/81SOmiG+iDL._AC_SL1500_.jpg'),
+(9, 18, 'infocus', 4, 'https://images-na.ssl-images-amazon.com/images/I/71PWccaKMTL._AC_SL1500_.jpg'),
+(10, 16, 'monitor', 62, 'https://m.media-amazon.com/images/I/71IC5qsZKpL._AC_SL1000_.jpg'),
+(11, 16, 'tv led', 9, 'https://tse2.mm.bing.net/th/id/OIP.o2ytqyrbvHQhhAEIP42YzwHaEC?pid=Api&P=0&h=180');
 
 -- --------------------------------------------------------
 
@@ -65,7 +72,12 @@ INSERT INTO `kategori` (`id_kategori`, `nama_kategori`, `keterangan_kategori`) V
 (6, 'alat gambar', 'digunakan untuk menggambar'),
 (7, 'alat belajar', 'digunakan untuk pembelajaran'),
 (11, 'alat ngoding', 'digunakan untuk coding'),
-(15, 'alat suara', 'digunakan untuk kegiatan');
+(15, 'alat suara', 'digunakan untuk kegiatan'),
+(16, 'elektronik', 'hati hari dalam menggunakan alat ini'),
+(17, 'alat gambar', 'digunakan untuk kreasi di buku gambar'),
+(18, 'barang', 'digunakan untuk dibaca '),
+(19, 'alat kebersihan', 'digunakan untuk membersihkan lingkungan '),
+(20, 'alat informasi', 'digunakan untuk menginformasikan ');
 
 -- --------------------------------------------------------
 
@@ -91,7 +103,45 @@ INSERT INTO `log_aktivitas` (`id_log`, `id_user`, `aksi`, `waktu`) VALUES
 (4, 2, 'Petugas mengonfirmasi pengembalian alat ID: 32', '2026-04-23 05:49:51'),
 (5, 2, 'Petugas mengonfirmasi pengembalian alat ID: 27', '2026-04-23 05:49:55'),
 (6, 3, 'User melakukan request pinjam alat baru', '2026-04-23 05:50:36'),
-(7, 22, 'User login ke sistem', '2026-04-23 06:24:41');
+(7, 22, 'User login ke sistem', '2026-04-23 06:24:41'),
+(8, 1, 'User login ke sistem', '2026-04-23 06:30:39'),
+(9, 2, 'User login ke sistem', '2026-04-23 18:30:34'),
+(10, 2, 'User login ke sistem', '2026-04-23 18:35:13'),
+(11, 2, 'User login ke sistem', '2026-04-23 18:37:17'),
+(12, 2, 'User login ke sistem', '2026-04-23 18:39:27'),
+(13, 23, 'User login ke sistem', '2026-04-23 19:01:37'),
+(14, 1, 'User login ke sistem', '2026-04-23 19:01:50'),
+(15, 23, 'User login ke sistem', '2026-04-24 02:06:32'),
+(16, 1, 'User login ke sistem', '2026-04-24 02:06:43'),
+(17, 1, 'User login ke sistem', '2026-04-24 07:36:13'),
+(18, 1, 'User login ke sistem', '2026-04-24 07:50:12'),
+(19, 1, 'User login ke sistem', '2026-04-24 07:52:22'),
+(20, 1, 'User login ke sistem', '2026-04-24 07:55:17'),
+(21, 1, 'User login ke sistem', '2026-04-24 07:58:04'),
+(22, 7, 'User login ke sistem', '2026-04-24 07:58:22'),
+(23, 7, 'User login ke sistem', '2026-04-24 10:06:12'),
+(24, 1, 'User login ke sistem', '2026-04-24 10:08:11'),
+(25, 7, 'User login ke sistem', '2026-04-24 10:12:12'),
+(26, 3, 'User login ke sistem', '2026-04-24 10:24:02'),
+(27, 1, 'User login ke sistem', '2026-04-24 10:24:47'),
+(28, 7, 'User login ke sistem', '2026-04-24 10:28:20'),
+(29, 1, 'User login ke sistem', '2026-04-24 10:29:04'),
+(30, 1, 'User login ke sistem', '2026-04-24 10:29:54'),
+(31, 1, 'User login ke sistem', '2026-04-24 10:30:03'),
+(32, 1, 'User login ke sistem', '2026-04-24 10:30:35'),
+(33, 1, 'User login ke sistem', '2026-04-24 10:34:44'),
+(34, 1, 'User login ke sistem', '2026-04-24 10:37:08'),
+(35, 2, 'User login ke sistem', '2026-04-24 10:41:29'),
+(36, 1, 'User login ke sistem', '2026-04-24 10:42:19'),
+(37, 1, 'User login ke sistem', '2026-04-24 10:51:15'),
+(38, 1, 'User login ke sistem', '2026-04-24 10:54:37'),
+(39, 1, 'User login ke sistem', '2026-04-24 10:55:33'),
+(40, 1, 'User login ke sistem', '2026-04-24 10:55:56'),
+(41, 1, 'User login ke sistem', '2026-04-24 10:56:39'),
+(42, 1, 'User login ke sistem', '2026-04-24 10:58:47'),
+(43, 2, 'User login ke sistem', '2026-04-24 10:59:56'),
+(44, 14, 'User login ke sistem', '2026-04-24 11:00:47'),
+(45, 1, 'User login ke sistem', '2026-04-24 11:07:28');
 
 -- --------------------------------------------------------
 
@@ -163,7 +213,8 @@ INSERT INTO `user` (`id_user`, `username`, `password`, `role`) VALUES
 (19, 'parva rpl2', '$2y$12$j3eJfCn0E8yNkhT4x5Rb5OQcx5ZXvYXYhgBqEsagxV5pIlmY/7z7S', 'peminjam'),
 (20, 'gopal', '$2y$12$Gd/WQChW0Etv3n7TNDBAN.bp0w7qEOU/LxBLJDTY0WmUp4DrFWyqW', 'peminjam'),
 (21, 'gibrin', '$2y$12$KEqXTRlQQOkEnNIMyyhdFOTroY.tUetCCD9znY/d3cqi2Y2Z9PWzW', 'peminjam'),
-(22, 'abc', '$2y$12$qKP6eY17PzSA4uhWz5CYK.CjVq2M6ZwUXKXj2zDw91rGJhLdYl036', 'peminjam');
+(22, 'abc', '$2y$12$qKP6eY17PzSA4uhWz5CYK.CjVq2M6ZwUXKXj2zDw91rGJhLdYl036', 'peminjam'),
+(23, 'hilman', '$2y$12$HqU2dDNH5rEQNzfcGlJ9aOaRhg0QpgHIz6HFq55gxsSxquaFotvGu', 'peminjam');
 
 --
 -- Indexes for dumped tables
@@ -213,19 +264,19 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `alat`
 --
 ALTER TABLE `alat`
-  MODIFY `id_alat` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_alat` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `kategori`
 --
 ALTER TABLE `kategori`
-  MODIFY `id_kategori` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_kategori` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `log_aktivitas`
 --
 ALTER TABLE `log_aktivitas`
-  MODIFY `id_log` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_log` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `peminjaman`
@@ -237,7 +288,7 @@ ALTER TABLE `peminjaman`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id_user` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id_user` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Constraints for dumped tables

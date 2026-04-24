@@ -38,7 +38,7 @@
 
               <p class="small mb-5 pb-lg-2"><a class="text-white-50" href="#!"></a></p>
               <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit">Login</button>
-              
+              <br><br>
             <div>
               <p class="mb-0">Belum ada akun ?<a href="v_register.php" class="text-white-50 fw-bold">daftar disini</a>
               </p>

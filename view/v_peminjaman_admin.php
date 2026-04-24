@@ -1,11 +1,27 @@
 <?php 
+
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+// 1. Cek apakah sudah login? Jika belum, balik ke login.php
+if (!isset($_SESSION['role'])) {
+    header("Location: v_login.php");
+    exit();
+}
+
+// 2. Jika yang masuk BUKAN admin, maka dialihkan/ditendang balik
+if ($_SESSION['role'] !== 'admin') {
+    if ($_SESSION['role'] === 'petugas') {
+        header("Location: v_peminjaman_petugas.php");
+    } else {
+        header("Location: v_daftar_alat.php");
+    }
+    exit();
+}
+
+
 include '../controller/c_peminjaman.php'; 
 
-// Proteksi halaman: Hanya admin
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("location:v_login.php");
-    exit();
-} 
+
 
 $tipe_halaman = $_GET['tipe'] ?? 'pinjam'; // Default ke pinjam jika kosong
 ?>
@@ -23,7 +39,7 @@ $tipe_halaman = $_GET['tipe'] ?? 'pinjam'; // Default ke pinjam jika kosong
 
         <div class="mb-3 d-flex justify-content-between align-items-center">
             <div>
-                <a href="v_tampilan_user.php" class="btn btn-primary">kembali</a>
+                <a href="../view/v_tampilan_user.php" class="btn btn-primary">kembali</a>
                 <a href="v_peminjaman_admin.php?tipe=pinjam" class="btn btn-<?= ($tipe_halaman != 'kembali') ? 'primary' : 'outline-primary'; ?>">Daftar Peminjaman</a>
                 <a href="v_peminjaman_admin.php?tipe=kembali" class="btn btn-<?= ($tipe_halaman == 'kembali') ? 'primary' : 'outline-primary'; ?>">Daftar Pengembalian</a>
             </div>

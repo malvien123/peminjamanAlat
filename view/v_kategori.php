@@ -1,4 +1,24 @@
 <?php
+
+
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+// 1. Cek apakah sudah login? Jika belum, balik ke login.php
+if (!isset($_SESSION['role'])) {
+    header("Location: v_login.php");
+    exit();
+}
+
+// 2. Jika yang masuk BUKAN admin, maka dialihkan/ditendang balik
+if ($_SESSION['role'] !== 'admin') {
+    if ($_SESSION['role'] === 'petugas') {
+        header("Location: v_peminjaman_petugas.php");
+    } else {
+        header("Location: v_daftar_alat.php");
+    }
+    exit();
+}
+
 include_once '../controller/c_kategori.php';
 ?>
 
@@ -11,7 +31,7 @@ include_once '../controller/c_kategori.php';
 </head>
 <body>
     <h3><center>Kelola Kategori Alat</h3>
-    <a href="v_tampilan_user.php" class="btn btn-primary">kembali</a>
+    <a href="../view/v_tampilan_user.php" class="btn btn-primary">kembali</a>
     <a href="../view/v_tambah_kategori.php" class="btn btn-success"> Tambah kategori</a>
     <br><br>
     <table border="1" width="100%" cellpadding="10">

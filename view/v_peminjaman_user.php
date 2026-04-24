@@ -1,4 +1,25 @@
-<?php include '../controller/c_peminjaman.php'; ?>
+<?php 
+
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+// 1. Cek login
+if (!isset($_SESSION['role'])) {
+    header("Location: v_login.php");
+    exit();
+}
+
+// 2. Jika yang masuk BUKAN peminjam, tendang ke halaman kerjanya masing-masing
+if ($_SESSION['role'] !== 'peminjam') {
+    if ($_SESSION['role'] === 'admin') {
+        header("Location: v_tampilan_user.php"); // Ke dashboard admin
+    } elseif ($_SESSION['role'] === 'petugas') {
+        header("Location: v_peminjaman_petugas.php"); // Ke dashboard petugas
+    }
+    exit();
+}
+
+include '../controller/c_peminjaman.php';
+ ?>
 <!DOCTYPE html>
 <html>
 <head><title>Riwayat Saya</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>

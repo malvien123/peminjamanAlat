@@ -1,6 +1,8 @@
 <?php
 // Memulai sesi untuk menyimpan data login (seperti id_user dan role)
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Mengambil file koneksi dan model agar bisa digunakan di controller ini
 require_once '../model/m_koneksi.php'; 

@@ -1,4 +1,29 @@
-<?php include '../controller/c_peminjaman.php'; ?>
+<?php 
+
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+// 1. Cek apakah sudah login?
+if (!isset($_SESSION['role'])) {
+    header("Location: v_login.php");
+    exit();
+}
+
+// 2. Jika yang masuk BUKAN petugas, maka ditendang balik
+if ($_SESSION['role'] !== 'petugas') {
+    if ($_SESSION['role'] === 'admin') {
+        // Jika admin nyasar ke sini, balikin ke dashboard admin
+        header("Location: v_tampilan_user.php");
+    } else {
+        // Jika peminjam nyasar ke sini, balikin ke dashboard user
+        header("Location: v_daftar_alat.php");
+    }
+    exit();
+}
+
+
+include '../controller/c_peminjaman.php';
+ ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>

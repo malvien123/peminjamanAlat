@@ -1,11 +1,26 @@
 <?php 
-include '../controller/c_peminjaman.php'; 
 
-// Proteksi: Hanya user (peminjam) yang bisa akses form ini
-if ($_SESSION['role'] !== 'peminjam') {
-    header("location:v_login.php");
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+// 1. Cek login
+if (!isset($_SESSION['role'])) {
+    header("Location: v_login.php");
     exit();
 }
+
+// 2. Jika yang masuk BUKAN peminjam, tendang ke halaman kerjanya masing-masing
+if ($_SESSION['role'] !== 'peminjam') {
+    if ($_SESSION['role'] === 'admin') {
+        header("Location: v_tampilan_user.php"); // Ke dashboard admin
+    } elseif ($_SESSION['role'] === 'petugas') {
+        header("Location: v_peminjaman_petugas.php"); // Ke dashboard petugas
+    }
+    exit();
+}
+
+include '../controller/c_peminjaman.php'; 
+
+
 
 $id_alat = $_GET['id_alat'];
 $nama_alat = $_GET['nama'];
