@@ -62,20 +62,23 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pass_hash = $password ? password_hash($password, PASSWORD_DEFAULT) : null;
 
     // Jika aksinya adalah tambah data (Registrasi/Tambah User)
+   // Jika aksinya adalah tambah data (Registrasi/Tambah User)
     if ($aksi === 'tambah') {
         if (!$password) {
             echo "<script>alert('Password wajib diisi!'); window.history.back();</script>";
             exit();
         }
+        
         $result = $user_model->tambah_data($username, $pass_hash, $role);
         
         if ($result) {
-            // Jika yang daftar adalah peminjam, suruh dia login dulu
-            if ($role === 'peminjam') {
-                echo "<script>alert('Registrasi Berhasil! Silakan Login.'); window.location='../view/v_login.php';</script>";
+            // CEK SIAPA YANG SEDANG AKSES:
+            // Jika ada session role dan dia adalah Admin
+            if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+                echo "<script>alert('User Berhasil Ditambahkan oleh Admin!'); window.location='c_user.php';</script>";
             } else {
-                // Jika admin yang nambah petugas, balik ke dashboard admin
-                echo "<script>alert('Data Berhasil Ditambahkan'); window.location='c_user.php';</script>";
+                // Jika tidak ada session (berarti registrasi mandiri dari luar)
+                echo "<script>alert('Registrasi Berhasil! Silakan Login.'); window.location='../view/v_login.php';</script>";
             }
         } else {
             echo "<script>alert('Gagal menambahkan data'); window.history.back();</script>";
@@ -83,10 +86,11 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
 
     // Jika aksinya adalah update data
+    }
+    // Jika aksinya adalah update data
     } elseif ($aksi === 'update') {
         $result = $user_model->ubah_data($id_user, $username, $pass_hash);
         $status = $result ? 'diperbarui' : 'gagal';
         echo "<script>alert('Data $status'); window.location='c_user.php';</script>";
         exit();
     }
-}
