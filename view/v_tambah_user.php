@@ -18,8 +18,6 @@ if ($_SESSION['role'] !== 'admin') {
 }
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

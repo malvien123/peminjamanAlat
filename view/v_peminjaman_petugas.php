@@ -28,14 +28,8 @@ include '../controller/c_peminjaman.php';
 <html lang="id">
 <head>
     <title>Monitoring Peminjaman</title>
+    <link rel="stylesheet" href="../asset/style_peminjaman_petugas.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        @media print { 
-           .btn , .btn ,  .no-print {  display: none !important; } 
-            .badge { color: black !important; border: 1px solid #ccc; }
-        }
-    </style>
-</head>
 <body class="bg-light p-4">
     <div class="container bg-white p-4 shadow rounded">
         <div class="d-flex justify-content-between mb-4 align-items-center">
