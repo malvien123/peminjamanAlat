@@ -32,12 +32,10 @@ $nama_alat = $_GET['nama'];
             <p><strong>Tanggal Pinjam:</strong><br>
             <input type="text" name="tgl_pinjam" value="<?= date('d F Y'); ?>" style="width: 95%; padding: 8px; margin-top: 5px; background: #eee;" readonly></p>
 
-           <?php $stok_sekarang = $_GET['stok'] ?? 0; ?>
+            <?php $stok_sekarang = $_GET['stok'] ?? 0; ?>
 
-<p><strong>Jumlah Pinjam:</strong> (Stok tersedia: <?= $stok_sekarang; ?>)</p>
-<input type="number" name="jumlah_pinjam" min="1" max="<?= $stok_sekarang; ?>" 
-       placeholder="Masukkan jumlah..." 
-       style="width: 95%; padding: 8px; margin-top: 5px;" required>
+            <p><strong>Jumlah Pinjam:</strong> (Stok tersedia: <?= $stok_sekarang; ?>)</p>
+            <input type="number" name="jumlah_pinjam" min="1" max="<?= $stok_sekarang; ?>"placeholder="Masukkan jumlah..." style="width: 95%; padding: 8px; margin-top: 5px;" required>
 
             <p><strong>Kondisi Saat Keluar:</strong><br>
             <select name="kondisi_keluar" style="width: 100%; padding: 8px; margin-top: 5px;" required>

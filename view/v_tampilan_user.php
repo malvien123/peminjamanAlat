@@ -14,7 +14,7 @@ include_once '../controller/c_user.php';
 </head>
 <body>
     <h3><center>DASHBOARD ADMIN</h3>
-<!-- Sidebar -->
+
 <nav>
 <a href="v_log_aktivitas.php" class="btn btn-info"><i class="bi bi-clock-history"></i> Lihat Aktivitas</a>
  <a href="../view/v_tambah_user.php" class="button">tambah pengguna |</a>
@@ -24,7 +24,6 @@ include_once '../controller/c_user.php';
   <a href="../controller/c_login.php?aksi=logout" onclick="return confirm('Apakah Anda yakin ingin keluar dari sesi?');" class="buton">logout</a>
   </nav>
 
-    
     <table>
         <thead>
             <tr>

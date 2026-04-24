@@ -8,14 +8,12 @@ include_once '../controller/c_kategori.php';
     <title>Daftar Kategori Alat</title>
     <link rel="stylesheet" href="../asset/style_kategori.css"> 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-
 </head>
 <body>
     <h3><center>Kelola Kategori Alat</h3>
     <a href="v_tampilan_user.php" class="btn btn-primary">kembali</a>
     <a href="../view/v_tambah_kategori.php" class="btn btn-success"> Tambah kategori</a>
     <br><br>
-
     <table border="1" width="100%" cellpadding="10">
         <thead>
             <tr>

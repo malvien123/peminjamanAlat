@@ -14,9 +14,9 @@
 <body class="bg-light p-4">
     <div class="container bg-white p-4 shadow rounded">
         <div class="d-flex justify-content-between mb-4 align-items-center">
-            <h2 class="m-0">Laporan Monitoring Peminjaman Alat</h2>
+            <h2 class="m-0"><center>Laporan  Peminjaman Alat</h2>
             <a href="../controller/c_login.php?aksi=logout" onclick="return confirm('Apakah Anda yakin ingin keluar dari sesi?');" class="btn btn-danger">logout</a>
-            <button onclick="window.print()" class="btn btn-secondary no-print">Cetak Laporan</button>
+            <button onclick="window.print()" class="btn btn-secondary no-print" href="v_cetak_laporan.php">Cetak Laporan</button>
         </div>
 
         <table class="table table-bordered table-striped align-middle">

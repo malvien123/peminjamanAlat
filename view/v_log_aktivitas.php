@@ -18,7 +18,6 @@ $isi_log = $pinjam_model->tampil_log_aktivitas();
             <h4 class="text-primary">Riwayat Aktivitas Sistem</h4>
             <a href="v_tampilan_user.php" class="btn btn-secondary btn-sm">Kembali ke Dashboard</a>
         </div>
-        
         <div class="table-responsive">
             <table class="table table-bordered table-hover table-striped">
                 <thead class="table-dark">

@@ -6,14 +6,9 @@
     <link rel="stylesheet" href="../asset/style_update.css">
 </head>
 <body>
-  
-
   <div class="form-container">
     <h2>Edit Form User</h2>
     <form method="POST" action="../controller/c_user.php?aksi=update">
-
-
-    
       <div class="form-grid">
         <div class="left-column">
           

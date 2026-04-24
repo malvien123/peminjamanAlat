@@ -8,25 +8,13 @@ include '../controller/c_peminjaman.php';
 <head>
     <meta charset="UTF-8">
     <title>Cetak Laporan Peminjaman</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .footer { margin-top: 30px; text-align: right; }
-        
-        /* Menghilangkan elemen tertentu saat diprint */
-        @media print {
-            .no-print { display: none; }
-        }
-    </style>
+     <link rel="stylesheet" href="../asset/style_cetak_laporan.css"> 
 </head>
 <body onload="window.print()">
 
     <div class="header">
-        <h2>LAPORAN RIWAYAT PEMINJAMAN ALAT</h2>
-        <p>SMK SANGKURIANG 1 CIMAHI</p>
+        <h2><center>LAPORAN RIWAYAT PEMINJAMAN ALAT</h2>
+        <h3><center>SMK SANGKURIANG 1 CIMAHI</h3>
         <hr>
     </div>
 
@@ -56,13 +44,6 @@ include '../controller/c_peminjaman.php';
             <?php endwhile; ?>
         </tbody>
     </table>
-
-    <div class="footer">
-        <p>Cimahi, <?= date('d F Y'); ?></p>
-        <br><br>
-        <p>( ____________________ )</p>
-        <p>Petugas Perpustakaan/Sarpras</p>
-    </div>
 
 </body>
 </html>
