@@ -45,6 +45,7 @@ if ($_SESSION['role'] !== 'admin') {
       <input type="text" id="role" name="role" value="peminjam" readonly>
 
       <button type="submit" value="Daftar" name="tambah">DAFTAR </button>
+      <a href="v_tampilan_user.php" style="display:block; text-align:center; margin-top:10px; color:gray; text-decoration:none; font-size:12px;">Batal</a>
       
     </form>
   </div>

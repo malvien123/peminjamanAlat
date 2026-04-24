@@ -42,6 +42,7 @@ if ($_SESSION['role'] !== 'admin') {
       <input type="text" id="keterangan kategori" name="keterangan kategori" required>
 
       <button type="submit" value="Daftar" name="tambah">DAFTAR </button>
+      <a href="v_kategori.php" style="display:block; text-align:center; margin-top:10px; color:gray; text-decoration:none; font-size:12px;">Batal</a>
       
     </form>
   </div>

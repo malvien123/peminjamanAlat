@@ -11,7 +11,7 @@
     <h2>Edit Data Alat</h2>
     <hr>
     
-    <form action="../controller/c_alat.php?aksi=update" method="post">
+    < action="../controller/c_alat.php?aksi=update" method="post">
         
         <input type="hidden" name="id_alat" value="<?= $data_alat->id_alat; ?>">
 
@@ -62,7 +62,8 @@
         <br>
 
         <button type="submit" class="btn-simpan">UPDATE DATA</button>
-        <a href="../controller/c_alat.php?aksi=tampil" style="text-decoration: none; padding: 8px 15px; background: #6c757d; color: white; border-radius: 3px; display: inline-block;"><center>Batal</a>
+         <a href="../controller/c_alat.php?aksi=tampil" style="display:block; text-align:center; margin-top:10px; color:gray; text-decoration:none; font-size:12px;">Batal</a>
+
     </form>
 </div>
 </body>

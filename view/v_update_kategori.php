@@ -20,6 +20,7 @@
   <input type="text" name="keterangan_kategori" value="<?= $data_edit->keterangan_kategori; ?>">
   
   <button type="submit">Simpan Perubahan</button>
+  <a href="../view/v_kategori.php" style="display:block; text-align:center; margin-top:10px; color:gray; text-decoration:none; font-size:12px;">Batal</a>
 </form>
   </div>
 
