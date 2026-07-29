@@ -116,7 +116,8 @@ class m_peminjaman {
 
     // Menghapus record peminjaman
     public function hapus_data($id) {
-        return mysqli_query($this->db, "DELETE FROM peminjaman WHERE id_peminjaman = '$id'");
+        $sql = "DELETE FROM peminjaman WHERE id_peminjaman = '$id'";
+        return mysqli_query($this->db , $sql );
     }
 
     // Menampilkan riwayat pinjam khusus untuk 1 user (yang sedang login)

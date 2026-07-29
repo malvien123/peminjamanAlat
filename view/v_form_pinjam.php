@@ -20,49 +20,123 @@ if ($_SESSION['role'] !== 'peminjam') {
 
 include '../controller/c_peminjaman.php'; 
 
-
-
-$id_alat = $_GET['id_alat'];
-$nama_alat = $_GET['nama'];
+$id_alat = $_GET['id_alat'] ?? '';
+$nama_alat = $_GET['nama'] ?? '';
+$stok_sekarang = $_GET['stok'] ?? 0;
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Pinjam Alat</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div style="width: 400px; border: 1px solid #ccc; padding: 20px; margin: 20px auto; font-family: sans-serif;">
-        <h3 style="text-align: center; border-bottom: 2px solid blue; padding-bottom: 10px;">Proses Pendataan</h3>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4 font-sans">
+
+    <!-- Card Form Pinjam -->
+    <div class="w-full max-w-md bg-slate-800 text-slate-100 rounded-2xl shadow-2xl border border-slate-700/50 p-8 sm:p-10 my-6">
         
-        <form action="../controller/c_peminjaman.php?aksi=proses_pinjam" method="POST">
-            <input type="hidden" name="id_alat" value="<?= $id_alat; ?>">
+        <!-- Header / Judul -->
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-extrabold tracking-wider text-white uppercase">Proses Pendataan</h2>
+            <p class="text-slate-400 text-sm mt-1">Lengkapi data untuk mengajukan peminjaman</p>
+        </div>
 
-            <p><strong>Nama Peminjam:</strong><br>
-            <input type="text" value="<?= $_SESSION['username']; ?>" style="width: 95%; padding: 8px; margin-top: 5px; background: #eee;" readonly></p>
+        <!-- Form Pemesanan -->
+        <form action="../controller/c_peminjaman.php?aksi=proses_pinjam" method="POST" class="space-y-4">
+            
+            <input type="hidden" name="id_alat" value="<?= htmlspecialchars($id_alat); ?>">
 
-            <p><strong>Barang yang Dipilih:</strong><br>
-            <input type="text" value="<?= $nama_alat; ?>" style="width: 95%; padding: 8px; margin-top: 5px; background: #eee;" readonly></p>
-
-            <p><strong>Tanggal Pinjam:</strong><br>
-            <input type="text" name="tgl_pinjam" value="<?= date('d F Y'); ?>" style="width: 95%; padding: 8px; margin-top: 5px; background: #eee;" readonly></p>
-
-            <?php $stok_sekarang = $_GET['stok'] ?? 0; ?>
-
-            <p><strong>Jumlah Pinjam:</strong> (Stok tersedia: <?= $stok_sekarang; ?>)</p>
-            <input type="number" name="jumlah_pinjam" min="1" max="<?= $stok_sekarang; ?>"placeholder="Masukkan jumlah..." style="width: 95%; padding: 8px; margin-top: 5px;" required>
-
-            <p><strong>Kondisi Saat Keluar:</strong><br>
-            <select name="kondisi_keluar" style="width: 100%; padding: 8px; margin-top: 5px;" required>
-                <option value="Bagus">Bagus</option>
-                <option value="Rusak Ringan">Rusak Ringan</option>
-            </select></p>
-
-            <div style="margin-top: 20px;">
-                <button type="submit" style="width:100%; background:blue; color:white; padding:12px; border:none; cursor:pointer; font-weight:bold;">KIRIM REQUEST PINJAM</button>
-                <a href="v_daftar_alat.php" style="display:block; text-align:center; margin-top:10px; color:gray; text-decoration:none; font-size:12px;">Batal</a>
+            <!-- Nama Peminjam (Readonly) -->
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1">Nama Peminjam</label>
+                <input 
+                    type="text" 
+                    value="<?= htmlspecialchars($_SESSION['username']); ?>" 
+                    readonly 
+                    class="w-full px-4 py-2.5 rounded-lg bg-slate-900/60 border border-slate-700/80 text-slate-400 cursor-not-allowed select-none focus:outline-none text-sm font-medium"
+                >
             </div>
+
+            <!-- Barang yang Dipilih (Readonly) -->
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1">Barang yang Dipilih</label>
+                <input 
+                    type="text" 
+                    value="<?= htmlspecialchars($nama_alat); ?>" 
+                    readonly 
+                    class="w-full px-4 py-2.5 rounded-lg bg-slate-900/60 border border-slate-700/80 text-slate-300 cursor-not-allowed select-none focus:outline-none text-sm font-semibold"
+                >
+            </div>
+
+            <!-- Tanggal Pinjam (Readonly) -->
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1">Tanggal Pinjam</label>
+                <input 
+                    type="text" 
+                    name="tgl_pinjam" 
+                    value="<?= date('d F Y'); ?>" 
+                    readonly 
+                    class="w-full px-4 py-2.5 rounded-lg bg-slate-900/60 border border-slate-700/80 text-slate-400 cursor-not-allowed select-none focus:outline-none text-sm"
+                >
+            </div>
+
+            <!-- Jumlah Pinjam -->
+            <div>
+                <div class="flex justify-between items-center mb-1">
+                    <label for="jumlah_pinjam" class="block text-sm font-medium text-slate-300">Jumlah Pinjam</label>
+                    <span class="text-xs font-semibold text-indigo-400 bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-800/50">
+                        Stok: <?= $stok_sekarang; ?>
+                    </span>
+                </div>
+                <input 
+                    type="number" 
+                    id="jumlah_pinjam"
+                    name="jumlah_pinjam" 
+                    min="1" 
+                    max="<?= $stok_sekarang; ?>"
+                    placeholder="Masukkan jumlah..." 
+                    class="w-full px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200 text-sm" 
+                    required
+                >
+            </div>
+
+            <!-- Kondisi Saat Keluar -->
+            <div>
+                <label for="kondisi_keluar" class="block text-sm font-medium text-slate-300 mb-1">Kondisi Saat Keluar</label>
+                <select 
+                    id="kondisi_keluar"
+                    name="kondisi_keluar" 
+                    class="w-full px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200 text-sm cursor-pointer" 
+                    required
+                >
+                    <option value="Bagus" class="bg-slate-800 text-white">Bagus</option>
+                    <option value="Rusak Ringan" class="bg-slate-800 text-white">Rusak Ringan</option>
+                </select>
+            </div>
+
+            <!-- Tombol Submit & Batal -->
+            <div class="pt-4 space-y-3">
+                <button 
+                    type="submit" 
+                    class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-lg shadow-lg hover:shadow-indigo-500/30 transition duration-200 active:scale-[0.98] uppercase tracking-wider"
+                >
+                    Kirim Request Pinjam
+                </button>
+                <a 
+                    href="v_daftar_alat.php" 
+                    class="block text-center text-xs text-slate-400 hover:text-slate-200 transition duration-150 py-1"
+                >
+                    ← Batal
+                </a>
+            </div>
+
         </form>
+
     </div>
+
 </body>
 </html>

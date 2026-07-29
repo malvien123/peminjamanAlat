@@ -55,6 +55,18 @@ if ($aksi == 'konfirmasi_kembali') {
     header("location:../view/v_peminjaman_petugas.php");
     exit();
 }
+elseif ($aksi == 'hapus') {
+   $id_hapus = $_GET['id'];
+   $query = $pinjam_model->hapus_data($id_hapus);
+
+   if ($query) {
+    echo "<script>alert('selamat , data berhasil dihapus ');
+    window.location='../view/v_peminjaman_admin.php?tipe=pinjam';</script>" ;
+   } else {
+    echo "error :" . mysqli_error($db);
+   }
+   exit();
+}
 
 // --- LOGIKA EDIT: Mengambil data lama sebelum diubah oleh Admin ---
 $data_edit = null;

@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Mengambil file koneksi dan model agar bisa digunakan di controller ini
+// Mengambil file koneksi dan model
 require_once '../model/m_koneksi.php'; 
 require_once '../model/m_user.php'; 
 
@@ -12,85 +12,142 @@ require_once '../model/m_user.php';
 $koneksi_obj = new m_koneksi();
 $dbConnection = $koneksi_obj->koneksi; 
 
-// Cek apakah koneksi berhasil, jika gagal hentikan program
+// Cek apakah koneksi berhasil
 if (!$dbConnection) {
     die("Koneksi database gagal.");
 }
 
-// Menyiapkan model user untuk mengolah data tabel user
+// Menyiapkan model user
 $user_model = new m_user($dbConnection);
 
-// Menangkap instruksi aksi dari URL (default-nya adalah 'tampil')
+// Menangkap instruksi aksi & id dari URL
 $aksi = $_GET['aksi'] ?? 'tampil'; 
 $id   = $_GET['id'] ?? null;
 
-// --- LOGIKA TAMPIL DATA ---
+
+/* ==========================================================================
+   1. LOGIKA TAMPIL DATA (READ)
+   ========================================================================== */
 if ($aksi === 'tampil') {
-    // Meminta data dari model, lalu dikirim ke file view v_tampilan_user
+    // Ambil semua data user dari model
     $users = $user_model->tampil_data();
+    
+    // Tampilkan file view
     include '../view/v_tampilan_user.php'; 
     exit(); 
 } 
 
-// --- LOGIKA EDIT ---
+
+/* ==========================================================================
+   2. LOGIKA EDIT (FORM EDIT USER)
+   ========================================================================== */
 elseif ($aksi === 'edit' && $id) {
-    // Mengambil data spesifik satu orang berdasarkan ID untuk diedit
+    // Ambil data user spesifik berdasarkan ID
     $users = $user_model->tampil_data_by_id($id);
+    
+    // Tampilkan form update
     include_once '../view/v_update_user.php';
     exit();
 } 
 
-// --- LOGIKA HAPUS ---
+
+/* ==========================================================================
+   3. LOGIKA HAPUS DATA (DELETE)
+   ========================================================================== */
 elseif ($aksi === 'hapus' && $id) {
-    // Menjalankan fungsi hapus di database melalui model
+    // Eksekusi hapus data
     $result = $user_model->hapus_data($id);
-    $pesan = $result ? 'berhasil' : 'gagal';
-    // Memberikan notifikasi dan kembali ke daftar user
-    echo "<script>alert('Data $pesan dihapus'); window.location='c_user.php';</script>";
+    $pesan  = $result ? 'berhasil' : 'gagal';
+    
+    // Alert & Kembalikan URL ke folder view
+    echo "<script>
+            alert('Data $pesan dihapus!'); 
+            window.location.href = '../view/v_tampilan_user.php';
+          </script>";
     exit();
 }
 
-// --- LOGIKA TAMBAH & UPDATE (Menerima input dari Form) ---
-elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Menangkap data yang diketikkan user di form
-    $id_user   = $_POST['id_user'] ?? null;
-    $username  = $_POST['username'] ?? '';
-    $password  = $_POST['password'] ?? null;
-    $role      = $_POST['role'] ?? 'peminjam';
-    
-    // Mengubah password menjadi kode acak (Hash) agar aman di database
-    $pass_hash = $password ? password_hash($password, PASSWORD_DEFAULT) : null;
 
-    // Jika aksinya adalah tambah data (Registrasi/Tambah User)
-   // Jika aksinya adalah tambah data (Registrasi/Tambah User)
+/* ==========================================================================
+   4. LOGIKA PROSES FORM (POST: TAMBAH & UPDATE)
+   ========================================================================== */
+elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Tangkap data input dari Form
+    $id_user  = $_POST['id_user'] ?? null;
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? null;
+    $role     = $_POST['role'] ?? 'peminjam';
+    
+    // Hash password jika terisi
+    $pass_hash = !empty($password) ? password_hash($password, PASSWORD_DEFAULT) : null;
+
+
+    // --- SUB-LOGIKA A: TAMBAH USER / REGISTRASI ---
     if ($aksi === 'tambah') {
-        if (!$password) {
-            echo "<script>alert('Password wajib diisi!'); window.history.back();</script>";
+        
+        // Validasi wajib isi password
+        if (empty($password)) {
+            echo "<script>
+                    alert('Password wajib diisi!'); 
+                    window.history.back();
+                  </script>";
             exit();
         }
         
+        // Eksekusi tambah ke database
         $result = $user_model->tambah_data($username, $pass_hash, $role);
         
         if ($result) {
-            // CEK SIAPA YANG SEDANG AKSES:
-            // Jika ada session role dan dia adalah Admin
+            // Cek apakah yang menambah data adalah Admin (di dalam dashboard)
             if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-                echo "<script>alert('User Berhasil Ditambahkan oleh Admin!'); window.location='c_user.php';</script>";
+                echo "<script>
+                        alert('User berhasil ditambahkan oleh Admin!'); 
+                        window.location.href = '../view/v_tampilan_user.php';
+                      </script>";
             } else {
-                // Jika tidak ada session (berarti registrasi mandiri dari luar)
-                echo "<script>alert('Registrasi Berhasil! Silakan Login.'); window.location='../view/v_login.php';</script>";
+                // Jika registrasi mandiri dari halaman depan
+                echo "<script>
+                        alert('Registrasi Berhasil! Silakan Login.'); 
+                        window.location.href = '../view/v_login.php';
+                      </script>";
             }
         } else {
-            echo "<script>alert('Gagal menambahkan data'); window.history.back();</script>";
+            echo "<script>
+                    alert('Gagal menambahkan data user!'); 
+                    window.history.back();
+                  </script>";
         }
         exit();
-
-    // Jika aksinya adalah update data
     }
-    // Jika aksinya adalah update data
-    } elseif ($aksi === 'update') {
+    
+
+    // --- SUB-LOGIKA B: UPDATE / UBAH USER ---
+    elseif ($aksi === 'update') {
+        
+        // Eksekusi update data
         $result = $user_model->ubah_data($id_user, $username, $pass_hash);
-        $status = $result ? 'diperbarui' : 'gagal';
-        echo "<script>alert('Data $status'); window.location='c_user.php';</script>";
+        
+        if ($result) {
+            echo "<script>
+                    alert('Data user berhasil diperbarui!'); 
+                    window.location.href = '../view/v_tampilan_user.php';
+                  </script>";
+        } else {
+            echo "<script>
+                    alert('Gagal mengupdate data user!'); 
+                    window.history.back();
+                  </script>";
+        }
         exit();
     }
+}
+
+
+/* ==========================================================================
+   5. DEFAULT FALLBACK (Jika Aksinya Tidak Dikenali)
+   ========================================================================== */
+else {
+    header("Location: ../view/v_tampilan_user.php");
+    exit();
+}

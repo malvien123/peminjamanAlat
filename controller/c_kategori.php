@@ -1,4 +1,9 @@
 <?php
+// Memulai sesi untuk menyimpan data login
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Mengambil file koneksi dan model kategori agar bisa digunakan di sini
 require_once '../model/m_koneksi.php'; 
 require_once '../model/m_kategori.php'; 
@@ -14,7 +19,10 @@ $kategori_model = new m_kategori($dbConnection);
 $aksi = $_GET['aksi'] ?? 'tampil'; 
 $id   = $_GET['id'] ?? null;
 
-// --- LOGIKA TAMPIL DATA ---
+
+/* ==========================================================================
+   1. LOGIKA TAMPIL DATA (READ)
+   ========================================================================== */
 if ($aksi === 'tampil') {
     // Meminta semua daftar kategori dari model untuk ditampilkan ke user
     $data_kategori = $kategori_model->tampil_data();
@@ -22,7 +30,10 @@ if ($aksi === 'tampil') {
     exit();
 } 
 
-// --- LOGIKA EDIT ---
+
+/* ==========================================================================
+   2. LOGIKA EDIT (FORM EDIT KATEGORI)
+   ========================================================================== */
 elseif ($aksi === 'edit' && $id) {
     // Mengambil data satu kategori saja berdasarkan ID-nya untuk dimasukkan ke form edit
     $data_edit = $kategori_model->tampil_data_by_id($id);
@@ -30,45 +41,63 @@ elseif ($aksi === 'edit' && $id) {
     exit();
 } 
 
-// --- LOGIKA HAPUS ---
+
+/* ==========================================================================
+   3. LOGIKA HAPUS DATA (DELETE)
+   ========================================================================== */
 elseif ($aksi === 'hapus' && $id) {
     // Meminta model untuk menghapus data di database
     $result = $kategori_model->hapus_data($id);
+    $status = $result ? "berhasil" : "gagal";
     
-    // Menentukan status berhasil atau gagal untuk notifikasi
-    if ($result) {
-        $status = "berhasil";
-    } else {
-        $status = "gagal";
-    }
-    
-    // Muncul notifikasi pop-up dan balik lagi ke halaman kategori
+    // Muncul notifikasi pop-up dan dikembalikan ke folder view
     echo "<script>
-            alert('Data kategori $status dihapus'); 
-            window.location='c_kategori.php?aksi=tampil';
+            alert('Data kategori $status dihapus!'); 
+            window.location.href = '../view/v_kategori.php';
           </script>";
     exit();
 }
 
-// --- LOGIKA SIMPAN DATA (POST) ---
+
+/* ==========================================================================
+   4. LOGIKA SIMPAN DATA (POST: TAMBAH & UPDATE)
+   ========================================================================== */
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Menangkap inputan dari form (nama kategori dan keterangannya)
-    $id_kat  = $_POST['id_kategori'] ?? null;
-    $nama    = $_POST['nama_kategori'] ?? '';
-    $ket     = $_POST['keterangan_kategori'] ?? '';
+    $id_kat = $_POST['id_kategori'] ?? null;
+    $nama   = trim($_POST['nama_kategori'] ?? '');
+    $ket    = trim($_POST['keterangan_kategori'] ?? '');
 
-    // Jika aksinya tambah data baru
+    // --- SUB-LOGIKA A: TAMBAH KATEGORI BARU ---
     if ($aksi === 'tambah') {
         $result = $kategori_model->tambah_data($nama, $ket);
-        $msg = $result ? "Ditambah" : "Gagal";
+        $msg    = $result ? "berhasil ditambahkan" : "gagal ditambahkan";
+        
+        echo "<script>
+                alert('Data kategori $msg!'); 
+                window.location.href = '../view/v_kategori.php';
+              </script>";
+        exit();
     } 
-    // Jika aksinya update data yang sudah ada
+
+    // --- SUB-LOGIKA B: UPDATE / UBAH KATEGORI ---
     elseif ($aksi === 'update') {
         $result = $kategori_model->ubah_data($nama, $ket, $id_kat);
-        $msg = $result ? "Diperbarui" : "Gagal";
+        $msg    = $result ? "berhasil diperbarui" : "gagal diperbarui";
+        
+        echo "<script>
+                alert('Data kategori $msg!'); 
+                window.location.href = '../view/v_kategori.php';
+              </script>";
+        exit();
     }
+}
 
-    // Muncul notifikasi dan kembali ke daftar kategori
-    echo "<script>alert('Data $msg'); window.location='c_kategori.php?aksi=tampil';</script>";
+
+/* ==========================================================================
+   5. DEFAULT FALLBACK
+   ========================================================================== */
+else {
+    header("Location: ../view/v_kategori.php");
     exit();
 }
