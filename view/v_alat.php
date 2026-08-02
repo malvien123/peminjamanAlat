@@ -1,5 +1,4 @@
 <?php
-
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
 // 1. Cek apakah sudah login? Jika belum, balik ke login.php
@@ -30,6 +29,8 @@ include_once '../controller/c_alat.php';
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -41,7 +42,7 @@ include_once '../controller/c_alat.php';
     <div class="flex min-h-screen">
 
         <!-- ================= SIDEBAR KIRI ================= -->
-        <aside class="w-64 bg-indigo-900 text-white flex flex-col justify-between p-5 shadow-xl">
+        <aside class="w-64 bg-indigo-900 text-white flex flex-col justify-between p-5 shadow-xl shrink-0">
             <div>
                 <!-- Logo & Judul Aplikasi -->
                 <div class="flex items-center gap-3 px-2 py-4 border-b border-indigo-800/60 mb-6">
@@ -69,7 +70,7 @@ include_once '../controller/c_alat.php';
                         <i class="fa-solid fa-arrow-right-arrow-left w-5"></i> Peminjaman
                     </a>
                     <a href="v_log_aktivitas.php" class="flex items-center gap-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-800/50 hover:text-white font-medium transition">
-                        <i class="fa-solid fa-clock-history w-5"></i> Log Aktivitas
+                        <i class="fa-solid fa-clock-rotate-left w-5"></i> Log Aktivitas
                     </a>
                 </nav>
             </div>
@@ -104,11 +105,13 @@ include_once '../controller/c_alat.php';
                         <p class="text-sm font-semibold capitalize text-slate-800"><?= $_SESSION['role'] ?? 'Admin'; ?></p>
                         <span class="text-xs text-emerald-500 font-medium">● Online</span>
                     </div>
-                    <a href="../controller/c_login.php?aksi=logout" 
-                       onclick="return confirm('Apakah Anda yakin ingin keluar dari sesi?');" 
-                       class="ml-2 text-rose-500 hover:bg-rose-50 p-2 rounded-lg transition" title="Logout">
+                    <!-- Tombol Logout SweetAlert -->
+                    <button type="button" 
+                            onclick="konfirmasiLogout()" 
+                            class="ml-2 text-rose-500 hover:bg-rose-50 p-2 rounded-lg transition cursor-pointer" 
+                            title="Logout">
                         <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                    </a>
+                    </button>
                 </div>
             </header>
 
@@ -137,20 +140,36 @@ include_once '../controller/c_alat.php';
 
             <!-- ================= TABEL DATA ================= -->
             <section class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                <div class="p-5 border-b border-slate-100 flex justify-between items-center">
-                    <h3 class="font-bold text-slate-800">Data Inventaris Alat</h3>
-                    <div class="flex gap-2">
-                        <a href="../view/v_tampilan_user.php" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs rounded-xl transition flex items-center gap-2">
-                            <i class="fa-solid fa-arrow-left"></i> Kembali
-                        </a>
-                        <a href="../controller/c_alat.php?aksi=tambah" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs rounded-xl shadow-md transition flex items-center gap-2">
-                            <i class="fa-solid fa-plus"></i> Tambah Alat
-                        </a>
+                
+                <!-- Table Header dengan Input Pencarian -->
+                <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4">
+                    <h3 class="font-bold text-slate-800 text-lg">Data Inventaris Alat</h3>
+                    
+                    <div class="flex flex-col sm:flex-row items-center gap-3">
+                        <!-- FITUR SEARCH -->
+                        <div class="relative w-full sm:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" 
+                                   id="searchInput" 
+                                   onkeyup="cariAlat()" 
+                                   placeholder="Cari alat atau kategori..." 
+                                   class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 text-xs rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+                        </div>
+
+                        <!-- TOMBOL AKSI HEADER -->
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <a href="../view/v_tampilan_user.php" class="w-1/2 sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs rounded-xl transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-arrow-left"></i> Kembali
+                            </a>
+                            <a href="../controller/c_alat.php?aksi=tambah" class="w-1/2 sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 shrink-0">
+                                <i class="fa-solid fa-plus"></i> Tambah Alat
+                            </a>
+                        </div>
                     </div>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full text-left border-collapse" id="alatTable">
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-100 text-slate-400 text-xs uppercase font-semibold">
                                 <th class="p-4 pl-6 text-center">No</th>
@@ -161,13 +180,13 @@ include_once '../controller/c_alat.php';
                                 <th class="p-4 text-center pr-6">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 text-sm">
+                        <tbody class="divide-y divide-slate-100 text-sm" id="tableBody">
                             <?php 
                             if (!empty($data_alat)) :
                                 $no = 1; 
                                 foreach ($data_alat as $row): 
                             ?>
-                                <tr class="hover:bg-slate-50/80 transition">
+                                <tr class="hover:bg-slate-50/80 transition alat-row">
                                     <td class="p-4 pl-6 text-center font-medium text-slate-500"><?= $no++; ?></td>
                                     <td class="p-4 text-center">
                                         <?php if(!empty($row->foto)): ?>
@@ -199,15 +218,17 @@ include_once '../controller/c_alat.php';
                                     </td>
                                     <td class="p-4 text-center pr-6">
                                         <div class="flex justify-center items-center gap-2">
+                                            <!-- Tombol Edit -->
                                             <a href="v_update_alat.php?aksi=edit&id=<?= $row->id_alat; ?>" 
                                                class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs rounded-lg shadow-sm transition flex items-center gap-1">
                                                 <i class="fa-solid fa-pen-to-square"></i> Edit
                                             </a>
-                                            <a href="../controller/c_alat.php?aksi=hapus&id=<?= $row->id_alat; ?>" 
-                                               onclick="return confirm('Apakah Anda yakin ingin menghapus alat ini?')" 
-                                               class="px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white font-medium text-xs rounded-lg shadow-sm transition flex items-center gap-1">
+                                            <!-- Tombol Hapus dengan SweetAlert2 -->
+                                            <button type="button" 
+                                                    onclick="konfirmasiHapus(<?= $row->id_alat; ?>, '<?= addslashes(htmlspecialchars($row->nama_alat)); ?>')" 
+                                                    class="px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white font-medium text-xs rounded-lg shadow-sm transition flex items-center gap-1 cursor-pointer">
                                                 <i class="fa-solid fa-trash"></i> Hapus
-                                            </a>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -224,11 +245,114 @@ include_once '../controller/c_alat.php';
                             <?php endif; ?>
                         </tbody>
                     </table>
+
+                    <!-- Pesan saat hasil pencarian tidak ditemukan -->
+                    <div id="noResult" class="hidden p-8 text-center text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-3xl mb-2 text-slate-300"></i>
+                        <p class="font-medium text-slate-600">Alat tidak ditemukan</p>
+                        <span class="text-xs">Coba gunakan kata kunci pencarian yang lain.</span>
+                    </div>
                 </div>
             </section>
 
         </main>
     </div>
+
+    <!-- ================= SCRIPT JAVASCRIPT ================= -->
+    <script>
+        // 1. Fitur Search Realtime Alat
+        function cariAlat() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let rows = document.querySelectorAll(".alat-row");
+            let noResult = document.getElementById("noResult");
+            let matchCount = 0;
+
+            rows.forEach(row => {
+                let text = row.innerText.toLowerCase();
+                if (text.includes(input)) {
+                    row.style.display = "";
+                    matchCount++;
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            // Tampilkan pesan jika pencarian tidak cocok dengan item apapun
+            if (matchCount === 0 && rows.length > 0) {
+                noResult.classList.remove("hidden");
+            } else {
+                noResult.classList.add("hidden");
+            }
+        }
+
+        // 2. Konfirmasi Logout
+        function konfirmasiLogout() {
+            Swal.fire({
+                title: 'Konfirmasi sesi',
+                text: 'Apakah Anda yakin ingin keluar dari sistem?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fa-solid fa-right-from-bracket mr-1"></i> Ya, Logout',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'px-4 py-2 rounded-xl text-sm font-semibold',
+                    cancelButton: 'px-4 py-2 rounded-xl text-sm font-semibold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '../controller/c_login.php?aksi=logout';
+                }
+            });
+        }
+
+        // 3. Konfirmasi Hapus Alat
+        function konfirmasiHapus(id, namaAlat) {
+            Swal.fire({
+                title: 'Hapus Alat?',
+                html: `Apakah Anda yakin ingin menghapus alat <b>"${namaAlat}"</b>? Data yang dihapus tidak dapat dikembalikan.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fa-solid fa-trash mr-1"></i> Ya, Hapus',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'px-4 py-2 rounded-xl text-sm font-semibold',
+                    cancelButton: 'px-4 py-2 rounded-xl text-sm font-semibold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `../controller/c_alat.php?aksi=hapus&id=${id}`;
+                }
+            });
+        }
+    </script>
+
+    <!-- ================= JAVASCRIPT MEMBACA NOTIFIKASI SESSION ================= -->
+    <?php if (isset($_SESSION['pesan'])): ?>
+    <script>
+        Swal.fire({
+            title: '<?= htmlspecialchars($_SESSION['pesan']['judul']); ?>',
+            text: '<?= htmlspecialchars($_SESSION['pesan']['teks']); ?>',
+            icon: '<?= htmlspecialchars($_SESSION['pesan']['tipe']); ?>',
+            confirmButtonColor: '#6366f1',
+            confirmButtonText: 'OK',
+            customClass: {
+                popup: 'rounded-2xl shadow-xl',
+                confirmButton: 'px-5 py-2 rounded-xl text-sm font-semibold'
+            }
+        });
+    </script>
+    <?php 
+        unset($_SESSION['pesan']); 
+    endif; 
+    ?>
 
 </body>
 </html>

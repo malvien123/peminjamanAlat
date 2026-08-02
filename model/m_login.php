@@ -6,11 +6,14 @@ class m_login {
         $this->db = $db_connection;
     }
 
-    public function validasi_user($username, $password) {
-        // Ambil data user berdasarkan username
-        $sql = "SELECT * FROM user WHERE username = ?";
+    // Menerima 3 parameter: username, password, dan no_hp
+    public function validasi_user($username, $password, $no_hp) {
+        // Query menggunakan nama kolom 'no_hp'
+        $sql = "SELECT * FROM user WHERE username = ? AND no_hp = ?";
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("s", $username);
+        
+        // "ss" untuk 2 string (username & no_hp)
+        $stmt->bind_param("ss", $username, $no_hp);
         $stmt->execute();
         $result = $stmt->get_result();
         
@@ -19,10 +22,10 @@ class m_login {
             
             // Verifikasi password hash
             if (password_verify($password, $user->password)) {
-                return $user; // Password cocok
+                return $user; // Cocok semua!
             }
         }
         
-        return false; // Username tidak ketemu atau password salah
+        return false; // Jika username, no_hp, atau password ada yang salah
     }
 }

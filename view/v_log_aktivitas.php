@@ -36,6 +36,9 @@ $isi_log = $pinjam_model->tampil_log_aktivitas();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
@@ -105,11 +108,10 @@ $isi_log = $pinjam_model->tampil_log_aktivitas();
                         <p class="text-sm font-semibold capitalize text-slate-800"><?= $_SESSION['role'] ?? 'Admin'; ?></p>
                         <span class="text-xs text-emerald-500 font-medium">● Online</span>
                     </div>
-                    <a href="../controller/c_login.php?aksi=logout" 
-                       onclick="return confirm('Apakah Anda yakin ingin keluar dari sesi?');" 
-                       class="ml-2 text-rose-500 hover:bg-rose-50 p-2 rounded-lg transition" title="Logout">
+                    <!-- Tombol Logout yang Memanggil SweetAlert2 -->
+                    <button type="button" onclick="konfirmasiLogout()" class="ml-2 text-rose-500 hover:bg-rose-50 p-2 rounded-lg transition" title="Logout">
                         <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                    </a>
+                    </button>
                 </div>
             </header>
 
@@ -201,6 +203,32 @@ $isi_log = $pinjam_model->tampil_log_aktivitas();
 
         </main>
     </div>
+
+    <!-- Script SweetAlert2 -->
+    <script>
+        function konfirmasiLogout() {
+            Swal.fire({
+                title: 'Konfirmasi sesi',
+                text: 'Apakah Anda yakin ingin keluar dari sistem?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fa-solid fa-right-from-bracket mr-1"></i> Ya, Logout',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'px-4 py-2 rounded-xl text-sm font-semibold',
+                    cancelButton: 'px-4 py-2 rounded-xl text-sm font-semibold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '../controller/c_login.php?aksi=logout';
+                }
+            });
+        }
+    </script>
 
 </body>
 </html>

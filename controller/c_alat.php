@@ -57,17 +57,20 @@ elseif ($aksi === 'proses_tambah') {
     // Meminta model untuk memasukkan data ke tabel alat
     $result = $alat_model->tambah_data($nama_alat, $id_kategori, $stok, $foto);
     
-    // Setelah simpan, arahkan kembali ke folder view/v_alat.php
     if ($result) {
-        echo "<script>
-                alert('Alat berhasil ditambahkan!'); 
-                window.location.href = '../view/v_alat.php';
-              </script>";
+        $_SESSION['pesan'] = [
+            'judul' => 'Berhasil!',
+            'teks'  => 'Alat baru berhasil ditambahkan.',
+            'tipe'  => 'success'
+        ];
+        header("Location: ../view/v_alat.php");
     } else {
-        echo "<script>
-                alert('Gagal menambahkan alat!'); 
-                window.history.back();
-              </script>";
+        $_SESSION['pesan'] = [
+            'judul' => 'Gagal!',
+            'teks'  => 'Gagal menambahkan alat baru.',
+            'tipe'  => 'error'
+        ];
+        header("Location: ../view/v_tambah_alat.php");
     }
     exit();
 } 
@@ -101,16 +104,19 @@ elseif ($aksi === 'update') {
     $result = $alat_model->ubah_data($id_alat, $nama, $id_kat, $stok, $foto);
     
     if ($result) {
-        // Jika berhasil, kembali ke view/v_alat.php
-        echo "<script>
-                alert('Data alat berhasil diperbarui!'); 
-                window.location.href = '../view/v_alat.php';
-              </script>";
+        $_SESSION['pesan'] = [
+            'judul' => 'Berhasil!',
+            'teks'  => 'Data alat berhasil diperbarui.',
+            'tipe'  => 'success'
+        ];
+        header("Location: ../view/v_alat.php");
     } else {
-        echo "<script>
-                alert('Gagal mengupdate data alat!'); 
-                window.history.back();
-              </script>";
+        $_SESSION['pesan'] = [
+            'judul' => 'Gagal!',
+            'teks'  => 'Gagal mengupdate data alat.',
+            'tipe'  => 'error'
+        ];
+        header("Location: v_update_alat.php?aksi=edit&id=" . $id_alat);
     }
     exit();
 } 
@@ -122,13 +128,22 @@ elseif ($aksi === 'update') {
 elseif ($aksi === 'hapus' && $id) {
     // Meminta model untuk menghapus alat berdasarkan ID
     $result = $alat_model->hapus_data($id);
-    $pesan  = $result ? 'berhasil' : 'gagal';
     
-    // Alert & Kembalikan ke folder view/v_alat.php
-    echo "<script>
-            alert('Data alat $pesan dihapus!'); 
-            window.location.href = '../view/v_alat.php';
-          </script>";
+    if ($result) {
+        $_SESSION['pesan'] = [
+            'judul' => 'Berhasil!',
+            'teks'  => 'Data alat berhasil dihapus.',
+            'tipe'  => 'success'
+        ];
+    } else {
+        $_SESSION['pesan'] = [
+            'judul' => 'Gagal!',
+            'teks'  => 'Gagal menghapus data alat.',
+            'tipe'  => 'error'
+        ];
+    }
+    
+    header("Location: ../view/v_alat.php");
     exit();
 }
 

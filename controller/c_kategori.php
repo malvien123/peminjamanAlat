@@ -1,5 +1,5 @@
 <?php
-// Memulai sesi untuk menyimpan data login
+// Memulai sesi untuk menyimpan data login dan notifikasi SweetAlert
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -48,13 +48,22 @@ elseif ($aksi === 'edit' && $id) {
 elseif ($aksi === 'hapus' && $id) {
     // Meminta model untuk menghapus data di database
     $result = $kategori_model->hapus_data($id);
-    $status = $result ? "berhasil" : "gagal";
     
-    // Muncul notifikasi pop-up dan dikembalikan ke folder view
-    echo "<script>
-            alert('Data kategori $status dihapus!'); 
-            window.location.href = '../view/v_kategori.php';
-          </script>";
+    if ($result) {
+        $_SESSION['pesan'] = [
+            'tipe'  => 'success',
+            'judul' => 'Berhasil Dihapus!',
+            'teks'  => 'Data kategori berhasil dihapus.'
+        ];
+    } else {
+        $_SESSION['pesan'] = [
+            'tipe'  => 'error',
+            'judul' => 'Gagal Hapus!',
+            'teks'  => 'Data kategori gagal dihapus.'
+        ];
+    }
+    
+    header("Location: ../view/v_kategori.php");
     exit();
 }
 
@@ -71,24 +80,44 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // --- SUB-LOGIKA A: TAMBAH KATEGORI BARU ---
     if ($aksi === 'tambah') {
         $result = $kategori_model->tambah_data($nama, $ket);
-        $msg    = $result ? "berhasil ditambahkan" : "gagal ditambahkan";
         
-        echo "<script>
-                alert('Data kategori $msg!'); 
-                window.location.href = '../view/v_kategori.php';
-              </script>";
+        if ($result) {
+            $_SESSION['pesan'] = [
+                'tipe'  => 'success',
+                'judul' => 'Berhasil Ditambahkan!',
+                'teks'  => 'Kategori baru berhasil disimpan.'
+            ];
+            header("Location: ../view/v_kategori.php");
+        } else {
+            $_SESSION['pesan'] = [
+                'tipe'  => 'error',
+                'judul' => 'Gagal Ditambahkan!',
+                'teks'  => 'Gagal menyimpan kategori baru.'
+            ];
+            header("Location: " . $_SERVER['HTTP_REFERER']);
+        }
         exit();
     } 
 
     // --- SUB-LOGIKA B: UPDATE / UBAH KATEGORI ---
     elseif ($aksi === 'update') {
         $result = $kategori_model->ubah_data($nama, $ket, $id_kat);
-        $msg    = $result ? "berhasil diperbarui" : "gagal diperbarui";
         
-        echo "<script>
-                alert('Data kategori $msg!'); 
-                window.location.href = '../view/v_kategori.php';
-              </script>";
+        if ($result) {
+            $_SESSION['pesan'] = [
+                'tipe'  => 'success',
+                'judul' => 'Berhasil Diperbarui!',
+                'teks'  => 'Data kategori berhasil diperbarui.'
+            ];
+            header("Location: ../view/v_kategori.php");
+        } else {
+            $_SESSION['pesan'] = [
+                'tipe'  => 'error',
+                'judul' => 'Gagal Diperbarui!',
+                'teks'  => 'Gagal mengupdate data kategori.'
+            ];
+            header("Location: " . $_SERVER['HTTP_REFERER']);
+        }
         exit();
     }
 }

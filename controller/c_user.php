@@ -1,5 +1,5 @@
 <?php
-// Memulai sesi untuk menyimpan data login (seperti id_user dan role)
+// Memulai sesi untuk menyimpan data login & notifikasi SweetAlert
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -57,13 +57,22 @@ elseif ($aksi === 'edit' && $id) {
 elseif ($aksi === 'hapus' && $id) {
     // Eksekusi hapus data
     $result = $user_model->hapus_data($id);
-    $pesan  = $result ? 'berhasil' : 'gagal';
     
-    // Alert & Kembalikan URL ke folder view
-    echo "<script>
-            alert('Data $pesan dihapus!'); 
-            window.location.href = '../view/v_tampilan_user.php';
-          </script>";
+    if ($result) {
+        $_SESSION['pesan'] = [
+            'tipe'  => 'success',
+            'judul' => 'Berhasil Dihapus!',
+            'teks'  => 'Data pengguna berhasil dihapus dari sistem.'
+        ];
+    } else {
+        $_SESSION['pesan'] = [
+            'tipe'  => 'error',
+            'judul' => 'Gagal Hapus!',
+            'teks'  => 'Data pengguna gagal dihapus.'
+        ];
+    }
+    
+    header("Location: ../view/v_tampilan_user.php");
     exit();
 }
 
@@ -88,35 +97,43 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Validasi wajib isi password
         if (empty($password)) {
-            echo "<script>
-                    alert('Password wajib diisi!'); 
-                    window.history.back();
-                  </script>";
+            $_SESSION['pesan'] = [
+                'tipe'  => 'warning',
+                'judul' => 'Peringatan!',
+                'teks'  => 'Password wajib diisi.'
+            ];
+            header("Location: " . $_SERVER['HTTP_REFERER']);
             exit();
         }
         
         // Eksekusi tambah ke database
-        $result = $user_model->tambah_data($username, $pass_hash, $role);
+        $result = $user_model->tambah_data($username, $pass_hash, $role, $_POST['no_hp'] ?? null);
         
         if ($result) {
             // Cek apakah yang menambah data adalah Admin (di dalam dashboard)
             if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-                echo "<script>
-                        alert('User berhasil ditambahkan oleh Admin!'); 
-                        window.location.href = '../view/v_tampilan_user.php';
-                      </script>";
+                $_SESSION['pesan'] = [
+                    'tipe'  => 'success',
+                    'judul' => 'Berhasil!',
+                    'teks'  => 'User baru berhasil ditambahkan oleh Admin.'
+                ];
+                header("Location: ../view/v_tampilan_user.php");
             } else {
                 // Jika registrasi mandiri dari halaman depan
-                echo "<script>
-                        alert('Registrasi Berhasil! Silakan Login.'); 
-                        window.location.href = '../view/v_login.php';
-                      </script>";
+                $_SESSION['pesan'] = [
+                    'tipe'  => 'success',
+                    'judul' => 'Registrasi Berhasil!',
+                    'teks'  => 'Akun Anda berhasil dibuat. Silakan login.'
+                ];
+                header("Location: ../view/v_login.php");
             }
         } else {
-            echo "<script>
-                    alert('Gagal menambahkan data user!'); 
-                    window.history.back();
-                  </script>";
+            $_SESSION['pesan'] = [
+                'tipe'  => 'error',
+                'judul' => 'Gagal!',
+                'teks'  => 'Gagal menambahkan data user baru.'
+            ];
+            header("Location: " . $_SERVER['HTTP_REFERER']);
         }
         exit();
     }
@@ -126,18 +143,22 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif ($aksi === 'update') {
         
         // Eksekusi update data
-        $result = $user_model->ubah_data($id_user, $username, $pass_hash);
+        $result = $user_model->ubah_data($id_user, $username, $pass_hash, $_POST['no_hp'] ?? null);
         
         if ($result) {
-            echo "<script>
-                    alert('Data user berhasil diperbarui!'); 
-                    window.location.href = '../view/v_tampilan_user.php';
-                  </script>";
+            $_SESSION['pesan'] = [
+                'tipe'  => 'success',
+                'judul' => 'Berhasil Diperbarui!',
+                'teks'  => 'Data pengguna telah berhasil diperbarui.'
+            ];
+            header("Location: ../view/v_tampilan_user.php");
         } else {
-            echo "<script>
-                    alert('Gagal mengupdate data user!'); 
-                    window.history.back();
-                  </script>";
+            $_SESSION['pesan'] = [
+                'tipe'  => 'error',
+                'judul' => 'Gagal!',
+                'teks'  => 'Gagal memperbarui data pengguna.'
+            ];
+            header("Location: " . $_SERVER['HTTP_REFERER']);
         }
         exit();
     }

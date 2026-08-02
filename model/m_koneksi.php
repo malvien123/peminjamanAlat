@@ -28,4 +28,26 @@ class m_koneksi {
         // Biarkan kosong atau hapus jika sering menyebabkan error "MySQL server has gone away"
     }
 }
+
+
+
+
+
+//fungsi ringing whattap
+// ===================================================
+// HELPER FUNCTION: FORMAT NOMOR TELEPON UNTUK WHATSAPP
+// ===================================================
+if (!function_exists('formatNomorWA')) {
+    function formatNomorWA($nohp) {
+        // Hapus semua karakter selain angka
+        $nohp = preg_replace('/[^0-9]/', '', $nohp);
+        
+        // Jika diawali angka '0', ubah menjadi kode negara '62'
+        if (substr($nohp, 0, 1) === '0') {
+            $nohp = '62' . substr($nohp, 1);
+        }
+        
+        return $nohp;
+    }
+}
 ?>

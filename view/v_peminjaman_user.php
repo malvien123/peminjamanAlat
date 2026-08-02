@@ -28,6 +28,10 @@ include '../controller/c_peminjaman.php';
     <title>Riwayat Saya</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-slate-100 min-h-screen p-4 md:p-8 font-sans">
 
@@ -49,11 +53,12 @@ include '../controller/c_peminjaman.php';
                 <a href="v_daftar_alat.php" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-lg shadow-sm transition duration-150 flex items-center gap-1.5">
                     <span>+</span> Pinjam Alat
                 </a>
-                <a href="../controller/c_login.php?aksi=logout" 
-                   onclick="return confirm('Apakah Anda yakin ingin keluar dari sesi?');" 
-                   class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white font-medium text-sm rounded-lg shadow-sm transition duration-150">
-                    Logout
-                </a>
+                
+                <!-- Tombol Logout SweetAlert2 -->
+                <button type="button" onclick="konfirmasiLogout()" 
+                        class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white font-medium text-sm rounded-lg shadow-sm transition duration-150 flex items-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
             </div>
         </div>
 
@@ -71,7 +76,7 @@ include '../controller/c_peminjaman.php';
                 <tbody class="divide-y divide-slate-200 text-slate-700 text-sm">
                     <?php 
                     $no = 1;
-                    if (mysqli_num_rows($isi_tabel_user) > 0):
+                    if (isset($isi_tabel_user) && mysqli_num_rows($isi_tabel_user) > 0):
                         while($row = mysqli_fetch_object($isi_tabel_user)): 
                     ?>
                     <tr class="hover:bg-purple-50/50 transition duration-150">
@@ -109,6 +114,32 @@ include '../controller/c_peminjaman.php';
         </div>
 
     </div>
+
+    <!-- Script SweetAlert2 Konfirmasi Logout -->
+    <script>
+        function konfirmasiLogout() {
+            Swal.fire({
+                title: 'Konfirmasi sesi',
+                text: 'Apakah Anda yakin ingin keluar dari sistem?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fa-solid fa-right-from-bracket mr-1"></i> Ya, Logout',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'px-4 py-2 rounded-xl text-sm font-semibold',
+                    cancelButton: 'px-4 py-2 rounded-xl text-sm font-semibold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '../controller/c_login.php?aksi=logout';
+                }
+            });
+        }
+    </script>
 
 </body>
 </html>

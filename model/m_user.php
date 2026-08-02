@@ -39,11 +39,11 @@ class m_user {
     }
 
     // Fungsi SQL untuk memasukkan data user baru ke database
-    public function tambah_data($username, $password_hash, $role) {
-        $sql = "INSERT INTO user (username, password, role) VALUES (?, ?, ?)";
+    public function tambah_data($username, $password_hash, $role, $no_hp) {
+        $sql = "INSERT INTO user (username, password, role, no_hp) VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
-        // "sss" artinya data yang masuk semuanya berbentuk String (teks)
-        $stmt->bind_param("sss", $username, $password_hash, $role);
+        // "ssss" artinya data yang masuk semuanya berbentuk String (teks)
+        $stmt->bind_param("ssss", $username, $password_hash, $role, $no_hp);
         $result = $stmt->execute();
         $stmt->close();
         
@@ -51,17 +51,17 @@ class m_user {
     } 
 
     // Fungsi SQL untuk memperbarui data user yang sudah ada
-    public function ubah_data($id_user, $username, $password_hash = null) {
+    public function ubah_data($id_user, $username, $password_hash = null, $no_hp = null) {
         if ($password_hash) {
             // Query jika user ingin mengganti password juga
-            $sql = "UPDATE user SET username = ?, password = ? WHERE id_user = ?";
+            $sql = "UPDATE user SET username = ?, password = ?, no_hp = ? WHERE id_user = ?";
             $stmt = $this->db->prepare($sql);
-            $stmt->bind_param("ssi", $username, $password_hash, $id_user);
+            $stmt->bind_param("sssi", $username, $password_hash, $no_hp, $id_user);
         } else {
             // Query jika user HANYA mengganti username (password lama tetap)
-            $sql = "UPDATE user SET username = ? WHERE id_user = ?";
+            $sql = "UPDATE user SET username = ?, no_hp = ? WHERE id_user = ?";
             $stmt = $this->db->prepare($sql);
-            $stmt->bind_param("si", $username, $id_user);
+            $stmt->bind_param("ssi", $username, $no_hp, $id_user);
         }
         
         $result = $stmt->execute();

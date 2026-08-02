@@ -77,6 +77,18 @@ $users = $user_model->tampil_data_by_id($id_user); // Ambil data spesifik user
                 <p class="text-[11px] text-slate-400 mt-1.5">*Biarkan kosong jika tidak ingin mengubah password</p>
             </div>
 
+            <div>
+                <label for="no_hp" class="block text-sm font-medium text-slate-300 mb-2">nomor hp</label>
+                <input 
+                    type="no_hp" 
+                    id="no_hp" 
+                    name="no_hp" 
+                    placeholder="masukan nomor hp"
+                    class="w-full px-4 py-3 rounded-lg bg-slate-900/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+                    required
+                >
+            </div>
+
             <!-- Input Role (Readonly) -->
             <div>
                 <label for="role" class="block text-sm font-medium text-slate-400 mb-2">Role</label>

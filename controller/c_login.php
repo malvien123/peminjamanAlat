@@ -2,21 +2,22 @@
 session_start();
 require_once '../model/m_koneksi.php';
 require_once '../model/m_login.php';
-require_once '../model/m_peminjaman.php'; // 1. Tambahkan model peminjaman untuk log
+require_once '../model/m_peminjaman.php';
 
 $database = new m_koneksi();
 $db = $database->koneksi;
 
 $login_model = new m_login($db);
-$pinjam_model = new m_peminjaman($db); // 2. Inisialisasi model log
+$pinjam_model = new m_peminjaman($db);
 
 $aksi = $_GET['aksi'] ?? '';
 
 if ($aksi == 'proses_login') {
-    $user = $_POST['username'] ?? '';
-    $pass = $_POST['password'] ?? ''; 
+    $user   = $_POST['username'] ?? '';
+    $pass   = $_POST['password'] ?? ''; 
+    $no_hp  = $_POST['no_hp'] ?? ''; 
 
-    $data = $login_model->validasi_user($user, $pass);
+    $data = $login_model->validasi_user($user, $pass, $no_hp);
 
     if ($data) {
         // Set Session
@@ -24,7 +25,12 @@ if ($aksi == 'proses_login') {
         $_SESSION['username'] = $data->username;
         $_SESSION['role']     = $data->role; 
 
-        // 3. CATAT KE LOG: Setiap login berhasil, simpan ke tabel log_aktivitas
+        // =========================================================
+        // HAPUS SISA PESAN REGISTRASI AGAR TIDAK TERBAWA KE DASHBOARD
+        // =========================================================
+        unset($_SESSION['pesan']);
+
+        // CATAT KE LOG
         $pinjam_model->log_aktivitas($data->id_user, "User login ke sistem");
 
         // Redirect sesuai Role
@@ -43,11 +49,30 @@ if ($aksi == 'proses_login') {
         }
         exit();
     } else {
-        echo "<script>alert('Username atau Password Salah!'); window.location='../view/v_login.php';</script>";
+        // Menggunakan SweetAlert Flash Message untuk Notifikasi Gagal Login
+        $_SESSION['pesan'] = [
+            'judul' => 'Login Gagal!',
+            'teks'  => 'Username, Password, atau Nomor Telepon salah!',
+            'tipe'  => 'error'
+        ];
+        header("location:../view/v_login.php");
         exit();
     }
 } 
-// ... bagian logout tetap sama
+// Jika kamu juga menangani proses registrasi di controller ini:
+elseif ($aksi == 'proses_register') {
+    // ... logic simpan user ke DB kamu ...
+    
+    // Set pesan sukses registrasi untuk ditangkap v_login.php
+    $_SESSION['pesan'] = [
+        'judul' => 'Registrasi Berhasil!',
+        'teks'  => 'Akun Anda berhasil dibuat. Silakan login.',
+        'tipe'  => 'success'
+    ];
+    
+    header("location:../view/v_login.php");
+    exit();
+}
 elseif ($aksi == 'logout') {
     session_destroy();
     header("location:../view/v_login.php");

@@ -1,6 +1,8 @@
 <?php
 // Memastikan session aktif untuk mengecek siapa yang sedang login (Admin/Petugas/User)
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Menghubungkan ke file koneksi dan model peminjaman
 require_once '../model/m_koneksi.php';
@@ -18,7 +20,6 @@ $role = $_SESSION['role'] ?? '';
 
 // --- AKSI: USER MELAKUKAN PEMINJAMAN ---
 if ($aksi == 'proses_pinjam') {
-    // Menangkap data dari session (siapa yang pinjam) dan form (barang apa & berapa banyak)
     $id_user = $_SESSION['id_user'];
     $id_alat = $_POST['id_alat'];
     $jumlah  = $_POST['jumlah_pinjam'];
@@ -28,52 +29,73 @@ if ($aksi == 'proses_pinjam') {
     $simpan = $pinjam_model->tambah_pinjam($id_user, $id_alat, $jumlah, $kondisi);
 
     if ($simpan) {
-        // Mencatat aktivitas ke tabel log
         $pinjam_model->log_aktivitas($_SESSION['id_user'], "User melakukan request pinjam alat baru");
-        // Jika berhasil, arahkan user ke riwayat pinjamannya sendiri
-        header("location:../view/v_peminjaman_user.php");
+        header("Location: ../view/v_peminjaman_user.php?pesan=sukses_tambah");
         exit();
     } else {
         die("Gagal memproses peminjaman: " . mysqli_error($db));
     }
 }
 
+// --- AKSI: ADMIN / OPERATOR INPUT PEMINJAMAN DIRECT/MANUAL ---
+if ($aksi == 'tambah_admin') {
+    $id_user = $_POST['id_user'];
+    $id_alat = $_POST['id_alat'];
+    $jumlah  = $_POST['jumlah_pinjam'];
+    $kondisi = $_POST['kondisi_keluar'] ?? 'Baik';
+
+    $simpan = $pinjam_model->tambah_pinjam_admin($id_user, $id_alat, $jumlah, $kondisi);
+
+    if ($simpan === "stok_kurang") {
+        header("Location: ../view/v_peminjaman_admin.php?tipe=pinjam&pesan=stok_kurang");
+        exit();
+    } elseif ($simpan) {
+        $pinjam_model->log_aktivitas($_SESSION['id_user'], "Admin membuatkan peminjaman manual untuk user ID: $id_user");
+        header("Location: ../view/v_peminjaman_admin.php?tipe=pinjam&pesan=sukses_tambah");
+        exit();
+    } else {
+        header("Location: ../view/v_peminjaman_admin.php?tipe=pinjam&pesan=gagal_tambah");
+        exit();
+    }
+}
+
 // --- AKSI: PETUGAS MENYETUJUI PINJAMAN ---
 if ($aksi == 'setuju') {
-    // Mengubah status pending -> dipinjam (dan memotong stok di model)
     $pinjam_model->verifikasi_pinjam($id);
     $pinjam_model->log_aktivitas($_SESSION['id_user'], "Petugas menyetujui peminjaman ID: $id");
-    header("location:../view/v_peminjaman_petugas.php");
+    header("Location: ../view/v_peminjaman_petugas.php?pesan=sukses_setuju");
     exit();
 }
 
 // --- AKSI: PETUGAS MENGONFIRMASI PENGEMBALIAN ---
 if ($aksi == 'konfirmasi_kembali') {
-    // Mengubah status dipinjam -> kembali (dan menambah stok kembali di model)
     $pinjam_model->konfirmasi_kembali($id);
     $pinjam_model->log_aktivitas($_SESSION['id_user'], "Petugas mengonfirmasi pengembalian alat ID: $id");
-    header("location:../view/v_peminjaman_petugas.php");
+    header("Location: ../view/v_peminjaman_petugas.php?pesan=sukses_kembali");
     exit();
 }
-elseif ($aksi == 'hapus') {
-   $id_hapus = $_GET['id'];
-   $query = $pinjam_model->hapus_data($id_hapus);
 
-   if ($query) {
-    echo "<script>alert('selamat , data berhasil dihapus ');
-    window.location='../view/v_peminjaman_admin.php?tipe=pinjam';</script>" ;
-   } else {
-    echo "error :" . mysqli_error($db);
-   }
-   exit();
+// --- AKSI: HAPUS PEMINJAMAN ---
+if ($aksi == 'hapus') {
+    $id_hapus = $_GET['id'];
+    $tipe = $_GET['tipe'] ?? 'pinjam';
+    
+    $query = $pinjam_model->hapus_data($id_hapus);
+
+    if ($query) {
+        $pinjam_model->log_aktivitas($_SESSION['id_user'], "Admin/Petugas menghapus data peminjaman ID: $id_hapus");
+        header("Location: ../view/v_peminjaman_admin.php?tipe=$tipe&pesan=sukses_hapus");
+    } else {
+        header("Location: ../view/v_peminjaman_admin.php?tipe=$tipe&pesan=gagal_hapus");
+    }
+    exit();
 }
 
 // --- LOGIKA EDIT: Mengambil data lama sebelum diubah oleh Admin ---
 $data_edit = null;
 if (isset($_GET['id']) && ($_GET['aksi'] == 'edit_pinjam' || $_GET['aksi'] == 'edit_kembali')) {
     $id_target = $_GET['id'];
-    // Query manual untuk mengambil detail pinjaman, nama user, dan nama alat untuk ditampilkan di form edit
-    $query_edit = mysqli_query($db, "SELECT p.*, u.username, a.nama_alat 
+    $query_edit = mysqli_query($db, "SELECT p.*, u.username, u.no_hp, a.nama_alat 
                                     FROM peminjaman p 
                                     JOIN user u ON p.id_user = u.id_user 
                                     JOIN alat a ON p.id_alat = a.id_alat 
@@ -88,9 +110,16 @@ if ($aksi == 'update_pinjam') {
     $status = $_POST['status'];
 
     $simpan = $pinjam_model->update_pinjam($id_peminjaman, $jumlah, $status);
-    $pinjam_model->log_aktivitas($_SESSION['id_user'], "Admin mengubah data peminjaman ID: " . $_POST['id_peminjaman']);
-    if ($simpan) {
-        echo "<script>alert('Data Berhasil Diupdate!'); window.location='../view/v_peminjaman_admin.php?tipe=pinjam';</script>";
+
+    if ($simpan === "stok_kurang") {
+        header("Location: ../view/v_peminjaman_admin.php?tipe=pinjam&pesan=stok_kurang");
+        exit();
+    } elseif ($simpan) {
+        $pinjam_model->log_aktivitas($_SESSION['id_user'], "Admin mengubah data peminjaman ID: $id_peminjaman");
+        header("Location: ../view/v_peminjaman_admin.php?tipe=pinjam&pesan=sukses_update");
+        exit();
+    } else {
+        header("Location: ../view/v_peminjaman_admin.php?tipe=pinjam&pesan=gagal_update");
         exit();
     }
 }
@@ -103,22 +132,23 @@ if ($aksi == 'update_kembali') {
 
     $simpan = $pinjam_model->update_kembali($id_peminjaman, $kondisi, $tgl);
     if ($simpan) {
-        echo "<script>alert('Data Pengembalian Berhasil Diupdate!'); window.location='../view/v_peminjaman_admin.php?tipe=kembali';</script>";
+        $pinjam_model->log_aktivitas($_SESSION['id_user'], "Admin mengubah data pengembalian ID: $id_peminjaman");
+        header("Location: ../view/v_peminjaman_admin.php?tipe=kembali&pesan=sukses_kembali");
+        exit();
+    } else {
+        header("Location: ../view/v_peminjaman_admin.php?tipe=kembali&pesan=gagal_update");
         exit();
     }
 }
 
 // --- LOGIKA TAMPILAN DATA BERDASARKAN ROLE ---
 if ($role == 'petugas') {
-    // Petugas melihat semua riwayat masuk-keluar alat
     $isi_tabel = $pinjam_model->tampil_data();
 } elseif ($role == 'admin') {
-    // Admin melihat data berdasarkan filter tipe (pinjam atau kembali)
     $isi_tabel = $pinjam_model->tampil_data_admin($_GET['tipe'] ?? 'pinjam');
-} 
+}
 
 // Selalu ambil riwayat milik user yang login agar tampil di dashboard user
 if (isset($_SESSION['id_user'])) {
     $isi_tabel_user = $pinjam_model->tampil_data_user($_SESSION['id_user']);
 }
-?>
